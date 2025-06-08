@@ -20,8 +20,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { createUserWithEmailAndPassword, UserCredential } from "firebase/auth";
+import { AuthError, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import { useValidatePassword } from "@/hooks/use-validatepassword";
 
 const formSchema = z
   .object({
@@ -35,6 +37,7 @@ const formSchema = z
   });
 
 const RegisterForm = () => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,13 +48,17 @@ const RegisterForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const { errors } = useValidatePassword(values.password);
     createUserWithEmailAndPassword(auth, values.email, values.password)
-      .then((userCredentials: UserCredential) => {
+      .then(() => {
+        router.push("/");
       })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(`${errorCode}-${errorMessage}`);
+      .catch((error: AuthError) => {
+        if (error.code === "auth/email-already-in-use") {
+          form.setError("email", {
+            message: "Email already in use",
+          });
+        }
       });
   };
 
