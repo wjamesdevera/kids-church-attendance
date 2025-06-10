@@ -1,9 +1,13 @@
 import { registrationErrorMessages } from "@/app/constants/error-messages";
 import { auth } from "@/lib/firebase";
-import { validatePassword } from "firebase/auth";
+import { validatePassword as firebaseValidatePassword} from "firebase/auth";
 
-export const useValidatePassword = async (password: string) => {
-  const status = await validatePassword(auth, password);
+type ErrorMessagesType = {
+    errors: Array<{message: string}>
+}
+
+export const validatePassword = async (password: string) : Promise<ErrorMessagesType> => {
+  const status = await firebaseValidatePassword(auth, password);
   const errors = [];
   const { password: passwordErrorMessage } = registrationErrorMessages;
   if (!status.isValid) {

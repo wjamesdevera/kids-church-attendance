@@ -23,13 +23,13 @@ import Link from "next/link";
 import { AuthError, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { useValidatePassword } from "@/hooks/use-validatepassword";
+import { validatePassword } from "@/util/auth";
 
 const formSchema = z
   .object({
     email: z.string().email(),
-    password: z.string().min(6).max(4096),
-    confirmPassword: z.string().min(6).max(4096),
+    password: z.string().min(8, "Password is too short").max(4096),
+    confirmPassword: z.string().min(8).max(4096),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -47,19 +47,26 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const { errors } = useValidatePassword(values.password);
-    createUserWithEmailAndPassword(auth, values.email, values.password)
-      .then(() => {
-        router.push("/");
-      })
-      .catch((error: AuthError) => {
-        if (error.code === "auth/email-already-in-use") {
-          form.setError("email", {
-            message: "Email already in use",
-          });
-        }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { errors } = await validatePassword(values.password);
+    if (errors) {
+      form.setError("password", {
+        message:
+          "Please choose a stronger password. Try a mix of letters, numbers, and symbols.",
       });
+    } else {
+      createUserWithEmailAndPassword(auth, values.email, values.password)
+        .then(() => {
+          router.push("/");
+        })
+        .catch((error: AuthError) => {
+          if (error.code === "auth/email-already-in-use") {
+            form.setError("email", {
+              message: "Email already in use",
+            });
+          }
+        });
+    }
   };
 
   return (
@@ -105,7 +112,7 @@ const RegisterForm = () => {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
