@@ -49,7 +49,7 @@ const RegisterForm = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { errors } = await validatePassword(values.password);
-    if (errors) {
+    if (errors.length > 0) {
       form.setError("password", {
         message:
           "Please choose a stronger password. Try a mix of letters, numbers, and symbols.",
