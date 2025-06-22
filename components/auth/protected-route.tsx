@@ -9,7 +9,7 @@ const ProtectedRoute = ({
   const { user, loading } = useAuth();
   useEffect(() => {
     if (!loading && !user) {
-      redirect("/register");
+      redirect("/login");
     }
   }, [user, loading]);
 

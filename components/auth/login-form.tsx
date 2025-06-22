@@ -2,7 +2,7 @@
 import { loginSchema } from "@/lib/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getAuth, validatePassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, validatePassword } from "firebase/auth";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,71 +17,100 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/firebase";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
-  const { register, handleSubmit } = useForm({
+  const router = useRouter();
+  const form = useForm<FormData>({
     resolver: zodResolver(loginSchema),
-  });
+    defaultValues: {
+      email: "",
+      password: ""
+    }
+  })
 
   const onSubmit = async (data: FormData) => {
-    const status = await validatePassword(auth, data.password);
-    console.log(data);
-    console.log("status: ", status);
+    const { email, password } = data;
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        router.push("/")
+      })
+      .catch((error) => {
+        form.setError("password", {
+          message: "Invalid email or password",
+        });
+        form.setError("email", {
+        });
+      })
   };
   return (
-    <Card className="w-full max-w-sm">
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <Card className="w-lg max-w-sm">
+      <Form {...form}>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>
-          <CardAction>
-            <Button variant="link">Sign Up</Button>
-          </CardAction>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                {...register("email")}
-                required
-              />
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="mb-4">
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="you@example.com"
+                      type="email"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="mb-4">
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter your password"
+                      type="password"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-center items-center flex-col mt-8">
+              <Button type="submit" className="w-full" variant="default">
+                Login
+              </Button>
+              <p>or</p>
+              <Button type="submit" className="w-full" variant="outline">
+                Google
+              </Button>
+              <Link
+                href="/register"
+                className="text-xs underline-offset-4 hover:underline"
+              >
+                Create an account
+              </Link>
             </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                {...register("password")}
-              />
-            </div>
-          </div>
+          </form>
         </CardContent>
-        <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
-          <Button variant="outline" className="w-full">
-            Login with Google
-          </Button>
-        </CardFooter>
-      </form>
+      </Form>
     </Card>
   );
 };
