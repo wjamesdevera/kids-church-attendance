@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/firebase";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -37,13 +37,14 @@ const LoginForm = () => {
     const { email, password } = data;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const user = userCredential.user;
         router.push("/")
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage)
+        form.setError("password", {
+          message: "Invalid email or password",
+        });
+        form.setError("email", {
+        });
       })
   };
   return (
@@ -88,6 +89,7 @@ const LoginForm = () => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
