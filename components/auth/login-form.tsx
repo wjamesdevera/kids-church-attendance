@@ -2,7 +2,7 @@
 import { loginSchema } from "@/lib/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getAuth, validatePassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, validatePassword } from "firebase/auth";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,10 +19,12 @@ import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/firebase";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
+  const router = useRouter();
   const form = useForm<FormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,9 +34,17 @@ const LoginForm = () => {
   })
 
   const onSubmit = async (data: FormData) => {
-    const status = await validatePassword(auth, data.password);
-    console.log(data);
-    console.log("status: ", status);
+    const { email, password } = data;
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        router.push("/")
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage)
+      })
   };
   return (
     <Card className="w-lg max-w-sm">
