@@ -24,6 +24,7 @@ import { AuthError, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { validatePassword } from "@/util/auth";
+import GoogleLoginButton from "../google-login-button";
 
 const formSchema = z
   .object({
@@ -139,9 +140,7 @@ const RegisterForm = () => {
                 Register
               </Button>
               <p>or</p>
-              <Button className="w-full" variant="outline">
-                Google
-              </Button>
+              <GoogleLoginButton />
               <Link
                 href="/"
                 className="text-xs underline-offset-4 hover:underline"
