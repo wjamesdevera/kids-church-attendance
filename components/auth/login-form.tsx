@@ -2,25 +2,21 @@
 import { loginSchema } from "@/lib/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, validatePassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/firebase";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { googleAuthProvider } from "@/lib/auth-provider";
+import Link from "next/link";
 import GoogleLoginButton from "../google-login-button";
 
 type FormData = z.infer<typeof loginSchema>;
