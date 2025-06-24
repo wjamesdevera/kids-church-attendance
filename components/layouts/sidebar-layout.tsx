@@ -1,5 +1,6 @@
+import Header from "../header";
 import HomeSidebar from "../home-sidebar";
-import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
+import { SidebarProvider } from "../ui/sidebar";
 
 const SidebarLayout = ({
   children,
@@ -7,8 +8,8 @@ const SidebarLayout = ({
   return (
     <SidebarProvider>
       <HomeSidebar />
-      <main className="w-full">
-        <SidebarTrigger />
+      <main className="w-full p-4">
+        <Header />
         {children}
       </main>
     </SidebarProvider>
