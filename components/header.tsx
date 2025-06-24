@@ -11,6 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { toTitleCase } from "@/util/string-case";
+import React from "react";
 
 const Header = () => {
   const pathname = usePathname();
@@ -29,24 +30,24 @@ const Header = () => {
       <SidebarTrigger />
       <Breadcrumb>
         <BreadcrumbList>
-          {linkItems.map((link, i) => (
-            <>
-              {i === linkItems.length - 1 ? (
-                <BreadcrumbItem key={link.label}>
-                  <BreadcrumbPage>{link.label}</BreadcrumbPage>
-                </BreadcrumbItem>
-              ) : (
-                <>
-                  <BreadcrumbItem key={link.label}>
-                    <BreadcrumbLink href={`/${link.link}`}>
-                      {link.label}
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                </>
-              )}
-            </>
+          {linkItems.slice(0, -1).map((link, i) => (
+            <React.Fragment key={i}>
+              <BreadcrumbItem key={link.label}>
+                <BreadcrumbLink href={`${link.link}`}>
+                  {link.label}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+            </React.Fragment>
           ))}
+
+          {linkItems.length > 0 && (
+            <BreadcrumbItem key={linkItems.length - 1}>
+              <BreadcrumbPage>
+                {linkItems[linkItems.length - 1].label}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          )}
         </BreadcrumbList>
       </Breadcrumb>
     </div>
