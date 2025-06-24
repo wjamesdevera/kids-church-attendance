@@ -7,7 +7,7 @@ const SidebarLayout = ({
   return (
     <SidebarProvider>
       <HomeSidebar />
-      <main>
+      <main className="w-full">
         <SidebarTrigger />
         {children}
       </main>
