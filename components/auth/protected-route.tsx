@@ -14,7 +14,6 @@ const ProtectedRoute = ({
   }, [user, loading]);
 
   if (user) {
-    console.log("protected", user);
   }
 
   if (!user) {
