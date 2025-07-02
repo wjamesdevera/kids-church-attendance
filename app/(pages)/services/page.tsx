@@ -1,5 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import ServicesTable from "./services-table";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 // TODO: Remove in production
 const tmp_services = [
@@ -64,12 +66,19 @@ const columns: ColumnDef<Service>[] = [
 ];
 
 const Page = () => {
-  return <div className="p-5">
-    <h2 className="font-bold text-2xl mb-2">Services</h2>
-    <div className="">
-      <ServicesTable columns={columns} data={tmp_services}/>
+  return (
+    <div className="p-5">
+      <h2 className="font-bold text-2xl mb-2">Services</h2>
+      <div className="mb-2 flex justify-end">
+        <Link href="/services/add">
+        <Button>Add a service</Button>
+        </Link>
+      </div>
+      <div className="">
+        <ServicesTable columns={columns} data={tmp_services} />
+      </div>
     </div>
-  </div>;
+  );
 };
 
 export default Page;
